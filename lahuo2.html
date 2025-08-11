@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>城市货运服务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        /* 手机状态栏 */
+        .status-bar {
+            background-color: #ffffff;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .status-left {
+            font-weight: 700;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .signal-icon, .wifi-icon, .battery-icon {
+            width: 16px;
+            height: 12px;
+            background-color: #333;
+            border-radius: 2px;
+        }
+
+        /* 应用顶部栏 */
+        .app-header {
+            background-color: #ffffff;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .location::after {
+            content: '▼';
+            margin-left: 4px;
+            font-size: 12px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-icon, .view-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #666;
+            border-radius: 50%;
+        }
+
+        /* 小程序提示横条 */
+        .mini-program-tip {
+            background-color: #fff3cd;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #856404;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #856404;
+        }
+
+        /* 服务类型标签栏 */
+        .service-tabs {
+            background-color: #ffffff;
+            padding: 16px;
+            display: flex;
+            gap: 24px;
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .tab-item {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666666;
+            cursor: pointer;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .tab-item.active {
+            color: #ff6b35;
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #ff6b35;
+        }
+
+        /* 车辆类型选择区域 */
+        .vehicle-types {
+            background-color: #ffffff;
+            padding: 16px;
+            margin-bottom: 8px;
+        }
+
+        .vehicle-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .vehicle-btn {
+            background-color: #f5f5f5;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #333333;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 60px;
+        }
+
+        .vehicle-btn.active {
+            background-color: #ff6b35;
+            color: #ffffff;
+        }
+
+        .vehicle-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .vehicle-btn.active:hover {
+            background-color: #ff6b35;
+        }
+
+        /* 车辆展示区域 */
+        .vehicle-display {
+            background-color: #ffffff;
+            padding: 24px 16px;
+            text-align: center;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .vehicle-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #f5f5f5;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .vehicle-nav.left {
+            left: 16px;
+        }
+
+        .vehicle-nav.right {
+            right: 16px;
+        }
+
+        .vehicle-image {
+            width: 200px;
+            height: 120px;
+            margin: 0 auto 16px;
+            background-color: #ff6b35;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .vehicle-specs {
+            font-size: 12px;
+            color: #666666;
+        }
+
+        /* 地址输入卡片区域 */
+        .address-card {
+            background-color: #ffffff;
+            padding: 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            margin: 0 16px 8px;
+        }
+
+        .address-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .address-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .flow-point {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+        }
+
+        .flow-point.start {
+            background-color: #28a745;
+        }
+
+        .flow-point.end {
+            background-color: #ff6b35;
+        }
+
+        .flow-line {
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, #28a745 0%, #ff6b35 100%);
+            border-style: dashed;
+        }
+
+        .address-inputs {
+            flex: 1;
+        }
+
+        .start-address {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .end-input {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 12px;
+            border: none;
+            font-size: 14px;
+        }
+
+        .end-input input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .address-book {
+            color: #ff6b35;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .red-packet {
+            width: 40px;
+            height: 40px;
+            background-color: #ff4444;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .address-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #666666;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 叫车流程说明区域 */
+        .process-section {
+            background-color: #ffffff;
+            padding: 16px;
+            margin: 0 16px 8px;
+            border-radius: 8px;
+        }
+
+        .process-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .process-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            font-size: 12px;
+            color: #666666;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .step-number.active {
+            background-color: #ff6b35;
+        }
+
+        .step-number.inactive {
+            background-color: #ffb899;
+        }
+
+        /* 底部导航栏 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            background-color: #ffffff;
+            border-top: 1px solid #eeeeee;
+            display: flex;
+            padding: 8px 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666666;
+            font-size: 12px;
+            padding: 4px;
+        }
+
+        .nav-item.active {
+            color: #ff6b35;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 400px) {
+            .vehicle-row {
+                justify-content: space-between;
+            }
+            
+            .vehicle-btn {
+                flex: 0 0 calc(20% - 6px);
+                min-width: 50px;
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 手机状态栏 -->
+    <div class="status-bar">
+        <div class="status-left">11:40</div>
+        <div class="status-right">
+            <div class="wifi-icon"></div>
+            <div class="signal-icon"></div>
+            <div class="battery-icon"></div>
+            <span>44%</span>
+        </div>
+    </div>
+
+    <!-- 应用顶部栏 -->
+    <div class="app-header">
+        <div class="location">南宁</div>
+        <div class="header-actions">
+            <div class="menu-icon"></div>
+            <div class="view-icon"></div>
+        </div>
+    </div>
+
+    <!-- 小程序提示横条 -->
+    <div class="mini-program-tip" id="miniTip">
+        <span>点击'•••'，选择'添加到我的小程序'，下次访问更便捷</span>
+        <button class="close-btn" onclick="closeTip()">×</button>
+    </div>
+
+    <!-- 服务类型标签栏 -->
+    <div class="service-tabs">
+        <button class="tab-item active" onclick="switchTab(this, '拉货')">拉货</button>
+        <button class="tab-item" onclick="switchTab(this, '搬家')">搬家</button>
+        <button class="tab-item" onclick="switchTab(this, '长途大车')">长途大车</button>
+        <button class="tab-item" onclick="switchTab(this, '租买车')">租买车</button>
+    </div>
+
+    <!-- 车辆类型选择区域 -->
+    <div class="vehicle-types">
+        <div class="vehicle-row">
+            <button class="vehicle-btn" onclick="selectVehicle(this)">跑腿</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">四轮小件</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">微面</button>
+            <button class="vehicle-btn active" onclick="selectVehicle(this)">小面</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">中面</button>
+        </div>
+        <div class="vehicle-row">
+            <button class="vehicle-btn" onclick="selectVehicle(this)">微货</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">小货</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">3米8</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">中货</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">5米2</button>
+        </div>
+        <div class="vehicle-row">
+            <button class="vehicle-btn" onclick="selectVehicle(this)">6米2</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">6米8</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">7米6</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">8米6</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">9米6</button>
+        </div>
+        <div class="vehicle-row">
+            <button class="vehicle-btn" onclick="selectVehicle(this)">11米7</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">13米</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">13米7</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">15米</button>
+            <button class="vehicle-btn" onclick="selectVehicle(this)">17米5</button>
+        </div>
+        <div class="vehicle-row">
+            <button class="vehicle-btn" onclick="selectVehicle(this)">❄️冷藏车 ▼</button>
+        </div>
+    </div>
+
+    <!-- 车辆展示区域 -->
+    <div class="vehicle-display">
+        <button class="vehicle-nav left">‹</button>
+        <div class="vehicle-image">
+            同城跨城<br>即叫即到
+        </div>
+        <button class="vehicle-nav right">›</button>
+        <div class="vehicle-specs">厢长1.8-2.4米 | 载重0.5-0.8吨 | 载方2.4-4.0方 | 更多规格 ></div>
+    </div>
+
+    <!-- 地址输入卡片区域 -->
+    <div class="address-card">
+        <div class="address-main">
+            <div class="address-flow">
+                <div class="flow-point start">装</div>
+                <div class="flow-line"></div>
+                <div class="flow-point end">卸</div>
+            </div>
+            <div class="address-inputs">
+                <div class="start-address">金城苑</div>
+                <div class="end-input">
+                    <input type="text" placeholder="输入卸货地下单（可选跨城）">
+                    <span class="address-book">地址簿</span>
+                </div>
+            </div>
+            <div class="red-packet">
+                新人<br>红包
+            </div>
+        </div>
+        <div class="address-actions">
+            <button class="action-btn">
+                <span>⭐</span>
+                <span>常用路线</span>
+            </button>
+            <button class="action-btn">
+                <span>➕</span>
+                <span>加途经点</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 叫车流程说明区域 -->
+    <div class="process-section">
+        <div class="process-title">叫车流程</div>
+        <div class="process-steps">
+            <div class="process-step">
+                <div class="step-number active">①</div>
+                <span>选车选址</span>
+            </div>
+            <div class="process-step">
+                <div class="step-number inactive">②</div>
+                <span>填写要求(预约/搬运/到付等)</span>
+            </div>
+            <div class="process-step">
+                <div class="step-number inactive">③</div>
+                <span>确认叫车</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <span>首页</span>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">📋</div>
+            <span>订单</span>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">💬</div>
+            <span>消息</span>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">👤</div>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        // 关闭小程序提示
+        function closeTip() {
+            document.getElementById('miniTip').style.display = 'none';
+        }
+
+        // 切换服务标签
+        function switchTab(element, tabName) {
+            // 移除所有标签的激活状态
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // 激活当前标签
+            element.classList.add('active');
+            console.log('切换到标签:', tabName);
+        }
+
+        // 选择车辆类型
+        function selectVehicle(element) {
+            // 移除所有车辆按钮的激活状态
+            document.querySelectorAll('.vehicle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // 激活当前按钮
+            element.classList.add('active');
+            console.log('选择车辆:', element.textContent);
+        }
+
+        // 底部导航切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                // 移除所有导航项的激活状态
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                // 激活当前导航项
+                this.classList.add('active');
+            });
+        });
+
+        // 车辆展示区域导航
+        document.querySelectorAll('.vehicle-nav').forEach(nav => {
+            nav.addEventListener('click', function() {
+                console.log('车辆导航:', this.classList.contains('left') ? '上一个' : '下一个');
+            });
+        });
+
+        // 地址输入交互
+        document.querySelector('.address-book').addEventListener('click', function() {
+            console.log('打开地址簿');
+        });
+
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                console.log('点击功能按钮:', this.textContent.trim());
+            });
+        });
+    </script>
+</body>
+</html>
