@@ -1,0 +1,14 @@
+<svg width="50" height="60" viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- Red packet body -->
+  <rect x="5" y="15" width="40" height="40" fill="#ff4444" rx="3"/>
+  <!-- Gold trim -->
+  <rect x="5" y="15" width="40" height="8" fill="#ffd700"/>
+  <rect x="5" y="47" width="40" height="8" fill="#ffd700"/>
+  <!-- Decorative pattern -->
+  <circle cx="25" cy="35" r="8" fill="#ffd700" opacity="0.3"/>
+  <!-- Text -->
+  <text x="25" y="32" font-family="Arial" font-size="6" fill="#ffd700" text-anchor="middle">新人</text>
+  <text x="25" y="40" font-family="Arial" font-size="6" fill="#ffd700" text-anchor="middle">红包</text>
+  <!-- Top fold -->
+  <polygon points="20,15 25,5 30,15" fill="#cc3333"/>
+</svg>

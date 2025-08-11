@@ -1,0 +1,18 @@
+<svg width="150" height="80" viewBox="0 0 150 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Truck body -->
+  <rect x="20" y="30" width="80" height="30" fill="#ff6b35" rx="3"/>
+  <!-- Truck cab -->
+  <rect x="100" y="25" width="25" height="35" fill="#ff6b35" rx="3"/>
+  <!-- Windows -->
+  <rect x="105" y="30" width="15" height="12" fill="#87CEEB" rx="1"/>
+  <!-- Wheels -->
+  <circle cx="35" cy="65" r="8" fill="#333"/>
+  <circle cx="35" cy="65" r="5" fill="#666"/>
+  <circle cx="85" cy="65" r="8" fill="#333"/>
+  <circle cx="85" cy="65" r="5" fill="#666"/>
+  <circle cx="115" cy="65" r="8" fill="#333"/>
+  <circle cx="115" cy="65" r="5" fill="#666"/>
+  <!-- Text on truck -->
+  <text x="60" y="48" font-family="Arial" font-size="8" fill="white" text-anchor="middle">同城跨城</text>
+  <text x="60" y="56" font-family="Arial" font-size="8" fill="white" text-anchor="middle">即叫即到</text>
+</svg>
