@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拉货 - 城市货运服务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        /* 手机状态栏 */
+        .status-bar {
+            background: #000;
+            color: #fff;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 应用顶部栏 */
+        .app-header {
+            background: #ff6b35;
+            color: #fff;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* 小程序提示横条 */
+        .miniprogram-tip {
+            background: #fff3e0;
+            color: #e65100;
+            padding: 8px 16px;
+            font-size: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ffcc80;
+        }
+
+        /* 服务类型标签栏 */
+        .service-tabs {
+            background: #fff;
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+        }
+
+        .service-tab {
+            background: #f5f5f5;
+            color: #666;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .service-tab.active {
+            background: #ff6b35;
+            color: #fff;
+        }
+
+        /* 车辆类型选择区域 */
+        .vehicle-selection {
+            background: #fff;
+            margin: 8px 16px;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .vehicle-item {
+            background: #f8f8f8;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .vehicle-item.selected {
+            border-color: #ff6b35;
+            background: #fff5f2;
+        }
+
+        .vehicle-icon {
+            width: 40px;
+            height: 40px;
+            background: #ddd;
+            border-radius: 6px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .vehicle-name {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .vehicle-spec {
+            font-size: 10px;
+            color: #999;
+        }
+
+        /* 车辆展示区域 */
+        .vehicle-display {
+            background: #fff;
+            margin: 8px 16px;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .vehicle-image {
+            width: 120px;
+            height: 80px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #999;
+        }
+
+        .vehicle-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 地址输入卡片 */
+        .address-card {
+            background: #fff;
+            margin: 8px 16px;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .address-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .address-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .address-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #fff;
+        }
+
+        .address-icon.from {
+            background: #4caf50;
+        }
+
+        .address-icon.to {
+            background: #ff6b35;
+        }
+
+        .address-input {
+            flex: 1;
+            border: none;
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .address-input::placeholder {
+            color: #999;
+        }
+
+        /* 叫车流程说明 */
+        .process-info {
+            background: #fff;
+            margin: 8px 16px;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .process-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            background: #ff6b35;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .step-text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .step-arrow {
+            color: #ddd;
+            font-size: 16px;
+            margin: 0 8px;
+        }
+
+        /* 底部导航栏 */
+        .bottom-nav {
+            background: #fff;
+            border-top: 1px solid #eee;
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-around;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            background: #ddd;
+            border-radius: 4px;
+            margin: 0 auto 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .nav-item.active .nav-icon {
+            background: #ff6b35;
+            color: #fff;
+        }
+
+        .nav-text {
+            font-size: 10px;
+            color: #999;
+        }
+
+        .nav-item.active .nav-text {
+            color: #ff6b35;
+        }
+
+        /* 主要操作按钮 */
+        .main-action {
+            background: #ff6b35;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .main-action:hover {
+            background: #e55a2b;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 375px) {
+            .vehicle-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 添加底部间距避免被导航栏遮挡 */
+        .content {
+            padding-bottom: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 手机状态栏 -->
+    <div class="status-bar">
+        <div class="status-left">
+            <span>9:41</span>
+        </div>
+        <div class="status-right">
+            <span>📶</span>
+            <span>📶</span>
+            <span>🔋100%</span>
+        </div>
+    </div>
+
+    <!-- 应用顶部栏 -->
+    <div class="app-header">
+        <div class="app-title">拉货</div>
+        <div class="header-icons">
+            <div class="header-icon">🔍</div>
+            <div class="header-icon">💬</div>
+        </div>
+    </div>
+
+    <!-- 小程序提示横条 -->
+    <div class="miniprogram-tip">
+        💡 小程序内下单更便捷，立享新人优惠
+    </div>
+
+    <div class="content">
+        <!-- 服务类型标签栏 -->
+        <div class="service-tabs">
+            <div class="service-tab active">拉货</div>
+            <div class="service-tab">搬家</div>
+            <div class="service-tab">长途大车</div>
+            <div class="service-tab">租买车</div>
+        </div>
+
+        <!-- 车辆类型选择区域 -->
+        <div class="vehicle-selection">
+            <div class="section-title">选择车型</div>
+            <div class="vehicle-grid">
+                <div class="vehicle-item selected">
+                    <div class="vehicle-icon">🚐</div>
+                    <div class="vehicle-name">小面包车</div>
+                    <div class="vehicle-spec">1.8m×1.3m×1.2m</div>
+                </div>
+                <div class="vehicle-item">
+                    <div class="vehicle-icon">🚚</div>
+                    <div class="vehicle-name">小货车</div>
+                    <div class="vehicle-spec">2.4m×1.4m×1.4m</div>
+                </div>
+                <div class="vehicle-item">
+                    <div class="vehicle-icon">🚛</div>
+                    <div class="vehicle-name">中货车</div>
+                    <div class="vehicle-spec">4.2m×1.8m×1.8m</div>
+                </div>
+                <div class="vehicle-item">
+                    <div class="vehicle-icon">🚐</div>
+                    <div class="vehicle-name">金杯车</div>
+                    <div class="vehicle-spec">3.2m×1.6m×1.8m</div>
+                </div>
+                <div class="vehicle-item">
+                    <div class="vehicle-icon">🚚</div>
+                    <div class="vehicle-name">依维柯</div>
+                    <div class="vehicle-spec">4.0m×1.8m×1.9m</div>
+                </div>
+                <div class="vehicle-item">
+                    <div class="vehicle-icon">🚛</div>
+                    <div class="vehicle-name">大货车</div>
+                    <div class="vehicle-spec">6.8m×2.3m×2.7m</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 车辆展示区域 -->
+        <div class="vehicle-display">
+            <div class="vehicle-image">
+                🚐 小面包车展示图
+            </div>
+            <div class="vehicle-info">
+                载重：500kg | 体积：2.8m³ | 参考价格：30-50元
+            </div>
+        </div>
+
+        <!-- 地址输入卡片 -->
+        <div class="address-card">
+            <div class="address-row">
+                <div class="address-icon from">起</div>
+                <input type="text" class="address-input" placeholder="请输入起始地址" id="fromAddress">
+            </div>
+            <div class="address-row">
+                <div class="address-icon to">终</div>
+                <input type="text" class="address-input" placeholder="请输入目的地址" id="toAddress">
+            </div>
+        </div>
+
+        <!-- 叫车流程说明 -->
+        <div class="process-info">
+            <div class="section-title">叫车流程</div>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-icon">1</div>
+                    <div class="step-text">选择车型</div>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="process-step">
+                    <div class="step-icon">2</div>
+                    <div class="step-text">填写地址</div>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="process-step">
+                    <div class="step-icon">3</div>
+                    <div class="step-text">确认订单</div>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="process-step">
+                    <div class="step-icon">4</div>
+                    <div class="step-text">等待接单</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要操作按钮 -->
+        <button class="main-action" onclick="submitOrder()">立即叫车</button>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-text">首页</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">📋</div>
+            <div class="nav-text">订单</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">💬</div>
+            <div class="nav-text">消息</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">👤</div>
+            <div class="nav-text">我的</div>
+        </div>
+    </div>
+
+    <script>
+        // 车辆选择交互
+        document.querySelectorAll('.vehicle-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有选中状态
+                document.querySelectorAll('.vehicle-item').forEach(i => i.classList.remove('selected'));
+                // 添加当前选中状态
+                this.classList.add('selected');
+                
+                // 更新车辆展示信息
+                const vehicleName = this.querySelector('.vehicle-name').textContent;
+                const vehicleSpec = this.querySelector('.vehicle-spec').textContent;
+                updateVehicleDisplay(vehicleName, vehicleSpec);
+            });
+        });
+
+        // 服务标签切换
+        document.querySelectorAll('.service-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.service-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 底部导航切换
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 更新车辆展示信息
+        function updateVehicleDisplay(name, spec) {
+            const vehicleImage = document.querySelector('.vehicle-image');
+            const vehicleInfo = document.querySelector('.vehicle-info');
+            
+            vehicleImage.textContent = `🚐 ${name}展示图`;
+            
+            // 根据车型更新参考信息
+            const infoMap = {
+                '小面包车': '载重：500kg | 体积：2.8m³ | 参考价格：30-50元',
+                '小货车': '载重：1000kg | 体积：4.7m³ | 参考价格：50-80元',
+                '中货车': '载重：3000kg | 体积：13.6m³ | 参考价格：120-200元',
+                '金杯车': '载重：1500kg | 体积：9.2m³ | 参考价格：80-120元',
+                '依维柯': '载重：2000kg | 体积：13.7m³ | 参考价格：100-150元',
+                '大货车': '载重：8000kg | 体积：42.1m³ | 参考价格：300-500元'
+            };
+            
+            vehicleInfo.textContent = infoMap[name] || '载重：-- | 体积：-- | 参考价格：--';
+        }
+
+        // 提交订单
+        function submitOrder() {
+            const fromAddress = document.getElementById('fromAddress').value;
+            const toAddress = document.getElementById('toAddress').value;
+            const selectedVehicle = document.querySelector('.vehicle-item.selected .vehicle-name').textContent;
+            
+            if (!fromAddress || !toAddress) {
+                alert('请填写完整的起始地址和目的地址');
+                return;
+            }
+            
+            alert(`订单提交成功！\n车型：${selectedVehicle}\n起点：${fromAddress}\n终点：${toAddress}\n\n正在为您匹配司机...`);
+        }
+
+        // 地址输入提示
+        document.getElementById('fromAddress').addEventListener('focus', function() {
+            this.placeholder = '如：北京市朝阳区三里屯';
+        });
+        
+        document.getElementById('toAddress').addEventListener('focus', function() {
+            this.placeholder = '如：北京市海淀区中关村';
+        });
+        
+        document.getElementById('fromAddress').addEventListener('blur', function() {
+            if (!this.value) this.placeholder = '请输入起始地址';
+        });
+        
+        document.getElementById('toAddress').addEventListener('blur', function() {
+            if (!this.value) this.placeholder = '请输入目的地址';
+        });
+    </script>
+</body>
+</html>
